@@ -1,0 +1,157 @@
+/* General Styles */
+.home-container {
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  padding-top: 20px; /* Adjust to prevent navbar overlap */
+}
+ 
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  padding: 10px 20px;
+  background-color: #333; /* Fallback color */
+  background-image: url('./img/logo.png'); /* Add your logo */
+  background-size: contain;
+  background-position: left;
+  background-repeat: no-repeat;
+  height: 60px; /* Set a fixed height */
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Navbar Logo */
+.navbar .logo h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Menu Items */
+.menu-items {
+  display: flex;
+}
+
+.menu-items ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-items ul li {
+  margin: 0 15px;
+}
+
+.menu-items ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 8px 12px;
+  transition: background-color 0.3s;
+}
+
+.menu-items ul li a:hover {
+  background-color: #575757;
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.hamburger .bar {
+  width: 30px;
+  height: 4px;
+  margin: 6px 0;
+  background-color: white;
+}
+
+/* Mobile Responsive Navbar */
+@media (max-width: 768px) {
+  .navbar {
+    background-image: none; /* Remove background image */
+    background-color: #333;
+  }
+
+  .menu-items {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 10px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .menu-items.active {
+    display: flex;
+  }
+
+  .menu-items ul {
+    display: block;
+    text-align: center;
+  }
+
+  .menu-items ul li {
+    margin: 10px 0;
+  }
+
+  .menu-items ul li a {
+    font-size: 1.2rem;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px;
+    height: 70px;
+  }
+
+  .menu-items ul li a {
+    font-size: 1rem;
+  }
+
+  .dashboard-content {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .dashboard-content h1 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .dashboard-content h2 {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .logout-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .logout-button:hover {
+    background-color: #d32f2f;
+  }
+  
+}
