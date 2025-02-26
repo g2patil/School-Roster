@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import config from "../config";
 const ReservationDistribution = () => {
   const [totalSeats, setTotalSeats] = useState(0);
   const [distribution, setDistribution] = useState([]);
@@ -21,7 +21,7 @@ const ReservationDistribution = () => {
   ];
 
   useEffect(() => {
-    fetch("http://192.168.1.114:8082/adnya/EmployeeRoster/summary", {
+    fetch(`${config.API_URL}/EmployeeRoster/summary`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

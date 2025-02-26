@@ -1,6 +1,7 @@
 import React, { useContext,useState,useEffect } from "react";
 import "./AddEmployee.css";
 import { AuthContext } from "../context/AuthContext";
+import config from "../config";
 //import { isSession } from "react-router-dom";
 //import { useAuth } from "../context/AuthContext";
 const AddEmployee = () => {
@@ -33,8 +34,8 @@ const AddEmployee = () => {
     committee_Det_Caste_Validity_Cert_Number: "",
     committee_Det_Caste_Validity_Cert_Date: "",
     prof_Qualification: "",
-    institute: { id: 1 },
-    school: { id: 1 }
+    institute: { id: 2 },
+    school: { id: 4 }
   };
   //const [binduCodes, setBinduCodes] = useState([]);
 
@@ -63,7 +64,7 @@ const AddEmployee = () => {
     
     const fetchReservations = async () => {
       try {
-        const response = await fetch('http://192.168.1.114:8082/adnya/resv/all', {
+        const response = await fetch(`${config.API_URL}/resv/all`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -193,7 +194,7 @@ console.log("Username:", user?.username);
 setCreatedBy(user.username); 
 
 console.log("Final Payload:", JSON.stringify(employee)); 
-    fetch("http://192.168.1.114:8082/adnya/EmployeeRoster/add", {
+    fetch(`${config.API_URL}/EmployeeRoster/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

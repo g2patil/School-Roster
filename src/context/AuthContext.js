@@ -1,12 +1,13 @@
 import React, { createContext, useState, useEffect ,useContext} from "react";
 import axios from "axios";
-
+import config from "../config";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [sessionId, setSessionId] = useState(null);
-
+ // const API_URL = process.env.REACT_APP_API_URL;
+ // console.log(API_URL);
   // Check if sessionId exists on page reload (from localStorage)
   useEffect(() => {
     const storedSessionId = localStorage.getItem("sessionId");
@@ -19,11 +20,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       console.log("jitu ++");
-      const res = await axios.post("http://192.168.1.114:8082/adnya/login", credentials, { withCredentials: true });
+      const res = await axios.post(`${config.API_URL}/login`, credentials, { withCredentials: true });
       if (res.data.sessionId) {
         setSessionId(res.data.sessionId);  // Store sessionId in state
       //  localStorage.setItem("sessionValid", "true");
-        console.log("jitu +"+res.data.sessionId);
+      //  console.log("jitu +"+res.data.sessionId);
 
         setUser({
           username: res.data.username,
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("http://192.168.1.114:8082/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${config.API_URL}/logout`, {}, { withCredentials: true });
       setUser(null);  // Clear user state
       setSessionId(null);  // Clear sessionId from state
       localStorage.removeItem("sessionId");  // Remove sessionId from localStorage
@@ -64,35 +65,3 @@ export const useAuth = () => {
 };
 
 
-/*import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
-
-export const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  // Check if session exists on page reload
-  useEffect(() => {
-    axios.get("/api/auth/session", { withCredentials: true })
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null));
-  }, []);
-
-  const login = async (credentials) => {
-    const res = await axios.post("http://192.168.1.114:8082/adnya/login", credentials, { withCredentials: true });
-    setUser(res.data.user);
-  };
-
-  const logout = async () => {
-    await axios.post("/api/auth/logout", {}, { withCredentials: true });
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-*/

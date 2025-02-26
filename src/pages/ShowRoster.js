@@ -3,6 +3,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import config from "../config";
 
 const ShowRoster = () => {
   const [employeeData, setEmployeeData] = useState([]);
@@ -10,7 +11,7 @@ const ShowRoster = () => {
   // Fetch data from backend
   useEffect(() => {
     axios
-      .get("http://192.168.1.114:8082/adnya/EmployeeRoster/view", {
+      .get(`${config.API_URL}/EmployeeRoster/view`, {
         withCredentials: true, // Include cookies
       })
       .then((response) => {
