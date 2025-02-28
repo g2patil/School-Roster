@@ -21,7 +21,7 @@ const ReservationDistribution = () => {
   ];
 
   useEffect(() => {
-    fetch(`${config.API_URL}/EmployeeRoster/summary`, {
+    fetch(`${config.API_URL}/EmployeeRoster/summary/2`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

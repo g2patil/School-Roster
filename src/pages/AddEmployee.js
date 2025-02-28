@@ -34,8 +34,8 @@ const AddEmployee = () => {
     committee_Det_Caste_Validity_Cert_Number: "",
     committee_Det_Caste_Validity_Cert_Date: "",
     prof_Qualification: "",
-    institute: { id: 2 },
-    school: { id: 4 }
+    institute: { id: 1 },
+    school: { id: 1 }
   };
   //const [binduCodes, setBinduCodes] = useState([]);
 
@@ -485,42 +485,9 @@ console.log("Final Payload:", JSON.stringify(employee));
                 />
               </td>
             </tr>
-            <tr>
-              <td>Is Active:</td>
-              <td>
-                <select
-                  name="isActive"
-                  value={employee.isActive}
-                  onChange={handleChange}
-                >
-                  <option value={true}>Active</option>
-                  <option value={false}>Inactive</option>
-                </select>
-              </td>
-            </tr>
+          
            
-            <tr>
-              <td>Committee Caste Validity Certificate Number:</td>
-              <td>
-                <input
-                  type="text"
-                  name="committee_Det_Caste_Validity_Cert_Number"
-                  value={employee.committee_Det_Caste_Validity_Cert_Number}
-                  onChange={handleChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Committee Caste Validity Certificate Date:</td>
-              <td>
-                <input
-                  type="date"
-                  name="committee_Det_Caste_Validity_Cert_Date"
-                  value={employee.committee_Det_Caste_Validity_Cert_Date}
-                  onChange={handleChange}
-                />
-              </td>
-            </tr>
+           
             <tr>
               <td>Professional Qualification:</td>
               <td>
