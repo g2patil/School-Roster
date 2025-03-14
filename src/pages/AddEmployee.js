@@ -2,6 +2,7 @@ import React, { useContext,useState,useEffect } from "react";
 import "./AddEmployee.css";
 import { AuthContext } from "../context/AuthContext";
 import config from "../config";
+
 //import { isSession } from "react-router-dom";
 //import { useAuth } from "../context/AuthContext";
 const AddEmployee = () => {
@@ -42,7 +43,7 @@ const AddEmployee = () => {
   // Fetch bindu codes from the API
  
 
-  
+  const [file, setFile] = useState(null); // State for CSV file
   const [employee, setEmployee] = useState(initialState);
   const [isCreatedByVisible] = React.useState(true);
   const { user } = useContext(AuthContext);
@@ -219,14 +220,103 @@ console.log("Final Payload:", JSON.stringify(employee));
       });
   };
 
+ // **CSV File Handling**
+ const handleFileChange = (event) => {
+  setFile(event.target.files[0]); // Store the selected file
+};
+
+
+const handleDownload_instruction = (filename) => {
+  const fileUrl = `${config.API_URL}/EmployeeRoster/instructions`;
+  const link = document.createElement("a");
+  link.href = fileUrl;
+  link.setAttribute("download", filename); // Set download attribute
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const handleDownload = (filename) => {
+  const fileUrl = `${config.API_URL}/EmployeeRoster/sample_csv`;
+  const link = document.createElement("a");
+  link.href = fileUrl;
+  link.setAttribute("download", filename); // Set download attribute
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+const handleFileUpload = async () => {
+  if (!file) {
+    alert("Please select a file first!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file); // Append the file
+
+  try {
+    const response = await fetch(`${config.API_URL}/EmployeeRoster/csv_upload`, {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Include session cookies if needed
+    });
+
+    if (response.ok) {
+      alert("File uploaded successfully!");
+    } else {
+      alert("File upload failed.");
+    }
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    alert("An error occurred while uploading the file.");
+  }
+};
+
+
   return (
     <div className="form-container">
-      <h2 className="form-title">Add New Employee</h2>
+    
       <form onSubmit={handleSubmit}>
         <table className="form-table">
           <tbody>
-          
+            <tr> <td colspan="2">  <h2 className="form-title">Add New Employee</h2></td></tr>
+           <tr> <td colspan="2"> 
+            <table align="center" bgcolor="aqua">
+              <tr>
+                <td> <button type="button" onClick={handleDownload_instruction}>Download Instruction Sample File</button>
+                </td>
+              </tr>
+              <tr>
+                <td> <button type="button" onClick={handleDownload}>Download Sample File</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                <label>Upload CSV File:</label>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                <input type="file" accept=".csv" onChange={handleFileChange} />
+                </td>
+              </tr>
+              <tr>
+                <td>  <button type="button" onClick={handleFileUpload}>Upload</button></td>
+              </tr>
+            </table>
+
+             
+            
+           
+         
+         
+          </td></tr><tr><td colspan="2">
+           
+           </td></tr>
             <tr>
+             
               <td>Bindu ID:</td>
               <td>
                 <input

@@ -5,7 +5,7 @@ import "./Home.css";
 
 const Dashboard = () => {
   //const { user } = useContext(AuthContext);
-  const { user, logout } = useContext(AuthContext);  // Get logout from context
+  const { /*user,*/ logout } = useContext(AuthContext);  // Get logout from context
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -31,6 +31,7 @@ const Dashboard = () => {
   <li><Link to="/dashboard/add-employee">Add Employee</Link></li>
   <li><Link to="/dashboard/edit-employee">Edit Employee</Link></li>
   <li><Link to="/dashboard/show-roster">Show Roster</Link></li>
+  <li><Link to="/dashboard/show-goshwara">Show Goshwara</Link></li>
   <li><Link to="/dashboard/show-resv-dist">Show Resv Dist</Link></li>
   <li>
               <button 
@@ -52,9 +53,9 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="dashboard-content">
-        <h1 align="center">Welcome, {user?.username}!</h1>
+     {/* <h1 align="center">Welcome, {user?.username}!</h1>
         <h2 align="center">Manage Employees & Roster</h2>
-
+*/}
         {/* Nested Routes Rendering */}
         <Outlet />
       </div>

@@ -10,6 +10,7 @@ import AddEmployee from "./pages/AddEmployee";
 import EditEmployee from "./pages/EditEmployee";
 import ShowRoster from "./pages/ShowRoster";
 import ReservationDistribution from "./pages/ReservationDistribution";
+import Goshwara from "./pages/Goshwara";
 
 const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ const AppRouter = () => {
             <Route path="add-employee" element={<AddEmployee />} />
             <Route path="edit-employee" element={<EditEmployee />} />
             <Route path="show-roster" element={<ShowRoster />} />
+            <Route path="show-goshwara" element={<Goshwara />} />
             <Route path="show-resv-dist" element={<ReservationDistribution />} />
           </Route>
         </Routes>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import config from "../config";
 const ReservationDistribution = () => {
@@ -21,7 +22,7 @@ const ReservationDistribution = () => {
   ];
 
   useEffect(() => {
-    fetch(`${config.API_URL}/EmployeeRoster/summary/2`, {
+    fetch(`${config.API_URL}/EmployeeRoster/summary/1`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -100,49 +101,120 @@ const ReservationDistribution = () => {
         {distribution.length > 0 && (
           <div className="overflow-x-auto mt-6">
             {isVertical ? (
-              <table Border="1" className="min-w-full bg-white border border-gray-400 shadow-md rounded-lg overflow-hidden">
-                <thead>
-                  <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
-                    <th className="py-4 px-6 border border-gray-400">ID</th>
-                    <th className="py-4 px-6 border border-gray-400">Category</th>
-                    <th className="py-4 px-6 border border-gray-400">Percentage</th>
-                    <th className="py-4 px-6 border border-gray-400">Allocated Seats</th>
-                    <th className="py-4 px-6 border border-gray-400">Filled Seats</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {distribution.map((cat, index) => (
-                    <tr key={cat.id} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} hover:bg-gray-300 border border-gray-400`}>
-                      <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium">{cat.id}</td>
-                      <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium">{cat.name}</td>
-                      <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium">{cat.percentage}%</td>
-                      <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium">{cat.allocatedSeats}</td>
-                      <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium">{cat.filledSeats}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <table border="1" className="min-w-full bg-white border border-gray-400 shadow-md rounded-lg overflow-hidden">
+            <thead>
+              <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
+                <th className="py-4 px-6 border border-gray-400 text-left">ID</th>
+                <th className="py-4 px-6 border border-gray-400 text-left">Category</th>
+                <th className="py-4 px-6 border border-gray-400 text-right">Percentage</th>
+                <th className="py-4 px-6 border border-gray-400 text-right">Allocated </th>
+                <th className="py-4 px-6 border border-gray-400 text-right">Filled </th>
+                <th className="py-4 px-6 border border-gray-400 text-right"><p>Remaining </p>
+                exceeds  </th> {/* New Column */}
+              </tr>
+            </thead>
+            <tbody>
+              {distribution.map((cat, index) => (
+                <tr
+                  key={cat.id}
+                  className={`${index % 2 === 0 ? "bg-gray-200" : "bg-white"} hover:bg-gray-300 border border-gray-400`}
+                >
+                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-left">{cat.id}</td>
+                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-left">{cat.name}</td>
+                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right">{cat.percentage}%</td>
+                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right">{cat.allocatedSeats}</td>
+                  <td
+                    className={`py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right
+                      ${cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""}`}
+                  >
+                    {cat.filledSeats}
+                  </td>
+                  <td
+                      style={{
+                        padding: "2px",
+                        border: "1px solid gray",
+                        color: "black",
+                        fontWeight: "500",
+                        backgroundColor:
+                          Number(cat.allocatedSeats) - Number(cat.filledSeats)< 0
+                            ? "red"
+                            : Number(cat.allocatedSeats) - Number(cat.filledSeats)=== 0  ? "green":"yellow",
+                      }}      >
+                    {cat.allocatedSeats - cat.filledSeats}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
             ) : (
-              <table  Border="1"   className="min-w-full bg-white border border-gray-400 shadow-md rounded-lg overflow-hidden">
-                <tbody>
-                  <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
-                    <th className="py-4 px-6 border border-gray-400">ID</th>
-                    {distribution.map((cat) => <td key={cat.id} className="py-4 px-6 border border-gray-400">{cat.id}</td>)}
-                  </tr>
-                  <tr className="bg-gray-200 border border-gray-400">
-                    <th className="py-4 px-6 border border-gray-400">Category</th>
-                    {distribution.map((cat) => <td key={cat.id} className="py-4 px-6 border border-gray-400">{cat.name}</td>)}
-                  </tr>
-                  <tr className="bg-white border border-gray-400">
-                    <th className="py-4 px-6 border border-gray-400">Allocated Seats</th>
-                    {distribution.map((cat) => <td key={cat.id} className="py-4 px-6 border border-gray-400">{cat.allocatedSeats}</td>)}
-                  </tr>
-                  <tr className="bg-gray-200 border border-gray-400">
-                    <th className="py-4 px-6 border border-gray-400">Filled Seats</th>
-                    {distribution.map((cat) => <td key={cat.id} className="py-4 px-6 border border-gray-400">{cat.filledSeats}</td>)}
-                  </tr>
-                </tbody>
-              </table>
+              <table border="1" className="w-full overflow-auto bg-white border border-gray-400 shadow-md rounded-lg overflow-hidden">
+  <tbody>
+    {/* ID Row */}
+    <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">ID</th>
+      {distribution.map((cat) => (
+        <td key={`id-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.id}</td>
+      ))}
+    </tr>
+
+    {/* Category Row */}
+    <tr className="bg-gray-200 border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">Category</th>
+      {distribution.map((cat) => (
+        <td key={`name-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.name}</td>
+      ))}
+    </tr>
+
+    {/* Allocated Seats Row */}
+    <tr className="bg-white border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">Allocated Seats</th>
+      {distribution.map((cat) => (
+        <td key={`allocated-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.allocatedSeats}</td>
+      ))}
+    </tr>
+
+    {/* Filled Seats Row */}
+    <tr className="bg-gray-200 border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">Filled Seats</th>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+          {cat.filledSeats}
+        </td>
+      ))}
+    </tr>
+
+    {/* Remaining Seats Row */}
+    <tr className="bg-white border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">Remaining /exceeds allocated   Seats</th>
+      {distribution.map((cat) => {
+        const remainingSeats = - cat.filledSeats + cat.allocatedSeats ;
+        return (
+          <td
+          style={{
+            padding: "2px",
+            border: "1px solid gray",
+            color: "black",
+            fontWeight: "500",
+            backgroundColor:
+              Number(cat.allocatedSeats) - Number(cat.filledSeats)< 0
+                ? "red"
+                : Number(cat.allocatedSeats) - Number(cat.filledSeats)=== 0  ? "green":"yellow",
+          }} 
+          >
+            {remainingSeats}
+          </td>
+        );
+      })}
+    </tr>
+  </tbody>
+</table>
+
             )}
           </div>
         )}

@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
           roles: res.data.roles
         });
 
-        alert(" ses id "+res.data.sessionId);
+       // alert(" ses id "+res.data.sessionId);
         localStorage.setItem("sessionId", res.data.sessionId);  // Store sessionId in localStorage
         setUser({ username: credentials.username });  // Optionally, store user data (like username)
       }
