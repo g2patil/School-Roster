@@ -32,6 +32,7 @@ const Dashboard = () => {
   <li><Link to="/dashboard/edit-employee">Edit Employee</Link></li>
   <li><Link to="/dashboard/show-roster">Show Roster</Link></li>
   <li><Link to="/dashboard/show-goshwara">Show Goshwara</Link></li>
+  <li><Link to="/dashboard/show-goshwara-by-cat">Show Goshwara By Category</Link></li>
   <li><Link to="/dashboard/show-resv-dist">Show Resv Dist</Link></li>
   <li>
               <button 

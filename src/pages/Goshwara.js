@@ -17,21 +17,35 @@ const [selectedDate, setSelectedDate] = useState(() => {
   const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
   return today;
 });
-const [calculatedReservations, setCalculatedReservations] = useState([]);
+//const [calculatedReservations, setCalculatedReservations] = useState([]);
  
-  const categories = [
-    { id: 1, name: "अनुसूचित जाती (SC)", percentage: 13 },
-    { id: 2, name: "अनुसूचित जमाती (ST)", percentage: 7 },
-    { id: 3, name: "भटक्या जमाती - NT-A (VJ/DT)", percentage: 3 },
-    { id: 4, name: "भटक्या जमाती - NT-B", percentage: 2.5 },
-    { id: 5, name: "भटक्या जमाती - NT-C (धनगर)", percentage: 3.5 },
-    { id: 6, name: "भटक्या जमाती - NT-D", percentage: 2 },
-    { id: 7, name: "विशेष मागास वर्ग (SBC)", percentage: 2 },
-    { id: 8, name: "इतर मागासवर्ग (OBC)", percentage: 19 },
-    { id: 9, name: "मराठा (SEBC अंतर्गत)", percentage: 10 },
-    { id: 10, name: "आर्थिक दुर्बल घटक (EWS)", percentage: 10 },
-    { id: 11, name: "सामान्य प्रवर्ग (Open)", percentage: 28 },
-  ];
+const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch(`${config.API_URL}/EmployeeRoster/resv_per_by_date?s=${selectedDate}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies (like SESSION ID)
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Transform the API data to match the desired format
+        const transformed = data.map(item => ({
+          id: item.id,
+          name: item.bindu_name_mar, // category name
+          percentage: item.per        // category percentage
+        }));
+        setCategories(transformed);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+      });
+  },[selectedDate]/*[categories, setCategories]*/);
+
+
+  
 //console.log(`${config.API_URL}/EmployeeRoster/summary/1?s=${selectedDate}`);
 
 const [categoryPosts, setCategoryPosts] = useState([]);
@@ -53,9 +67,13 @@ useEffect(() => {
         const jsonData = JSON.parse(text);
         if (Array.isArray(jsonData) && jsonData.length > 0) {
           calculateReservationPosts(jsonData);
+        } else {
+          // No data case
+          setCategoryPosts([]);  // CLEAR the data
         }
       } catch (error) {
         console.error("Error parsing JSON:", error);
+        setCategoryPosts([]);  // CLEAR on error too
       }
     })
     .catch((error) => console.error("Error fetching API data:", error));
@@ -410,21 +428,47 @@ const calculateReservationPosts = (apiData) => {
         );
       })}
     </tr>
-    <tr>
-    <td>समायोजनाकरिता  पदे</td>
-    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-    <td></td><td></td> <td></td>
+   
+    <tr className="bg-gray-200 border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">समायोजनाकरिता  पदे </th>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
     </tr>
-    <tr>
-    <td>समायोजनानंतर भरावयाची पदे</td>
-    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-    <td></td><td></td> <td></td>
+
+    <tr className="bg-gray-200 border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">समायोजनानंतर भरावयाची पदे </th>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
     </tr>
-    <tr>
-    <td>कालावधीत भरावयाची संभाव्य रिक्त पदे</td>
-    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-    <td></td><td></td> <td></td>
-    </tr>
+
+    <tr className="bg-gray-200 border border-gray-400">
+      <th className="py-4 px-6 border border-gray-400">कालावधीत भरावयाची संभाव्य रिक्त पदे</th>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
+    </tr> 
+
+
     {/* Remaining Seats Row */}
 <tr className="bg-white border border-gray-400">
   <th className="py-4 px-6 border border-gray-400">एकूण भरावयाची पदे</th>
@@ -462,7 +506,7 @@ const calculateReservationPosts = (apiData) => {
  
  
 
-        {categoryPosts.map((cat, index) => (
+        { categoryPosts.length > 0 &&  categoryPosts.map((cat, index) => (
           <React.Fragment key={cat.name}>
             {/* Category Header Row */}
             <tr className="bg-gray-200 border border-gray-400">

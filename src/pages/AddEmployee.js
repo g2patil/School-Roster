@@ -306,11 +306,7 @@ const handleFileUpload = async () => {
                 <td>  <button type="button" onClick={handleFileUpload}>Upload</button></td>
               </tr>
             </table>
-
-             
-            
-           
-         
+ 
          
           </td></tr><tr><td colspan="2">
            

@@ -11,6 +11,8 @@ import EditEmployee from "./pages/EditEmployee";
 import ShowRoster from "./pages/ShowRoster";
 import ReservationDistribution from "./pages/ReservationDistribution";
 import Goshwara from "./pages/Goshwara";
+import Goshwarabycat from "./pages/Goshwarabycat";
+//import EditEmployee from "./pages/EmployeeEdit";
 
 const AppRouter = () => {
   return (
@@ -27,6 +29,7 @@ const AppRouter = () => {
             <Route path="edit-employee" element={<EditEmployee />} />
             <Route path="show-roster" element={<ShowRoster />} />
             <Route path="show-goshwara" element={<Goshwara />} />
+            <Route path="show-goshwara-by-cat" element={<Goshwarabycat />} />
             <Route path="show-resv-dist" element={<ReservationDistribution />} />
           </Route>
         </Routes>

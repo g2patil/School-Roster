@@ -41,6 +41,35 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /************* */
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    fetch("http://192.168.1.114:8082/adnya/userinfo", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Important if your backend uses sessions
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch user info");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("User Info:", data); // For debug
+        setUserInfo(data);
+        console.log("2 User Info:", data);
+      })
+      .catch((err) => {
+        console.error("Error fetching user info:", err);
+      });
+  }, []);
+  const instituteId = userInfo?.institute?.id;
+  //const instituteId = userInfo.institute?.id;
+  /*************/
+
+
+  
   const logout = async () => {
     try {
       await axios.post(`${config.API_URL}/logout`, {}, { withCredentials: true });
@@ -54,7 +83,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, sessionId, login, logout }}>
+    <AuthContext.Provider value={{ user, sessionId, login, logout, userInfo }}>
       {children}
     </AuthContext.Provider>
   );
