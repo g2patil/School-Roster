@@ -3,7 +3,19 @@ import React, { useEffect, useState } from "react";
 import config from "../config";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "../fonts/NotoFonts"; // adjust based on where your font is
 
+pdfMake.vfs = pdfFonts.vfs;
+
+pdfMake.fonts = {
+  NotoSansDevanagari: {
+    normal: 'NotoSansDevanagari-Regular.ttf',
+    bold: 'NotoSansDevanagari-Regular.ttf',
+    italics: 'NotoSansDevanagari-Regular.ttf',
+    bolditalics: 'NotoSansDevanagari-Regular.ttf'
+  }
+};
 
 const Goshwara = () => {
   const [totalSeats, setTotalSeats] = useState(0);
@@ -159,7 +171,7 @@ const calculateReservationPosts = (apiData) => {
 
   /************ */
  
-  const generatePDF = () => {
+  const generatePDF1 = () => {
   const doc = new jsPDF(); // Landscape A4
   
     const table = document.getElementById("t1"); // Select your table
@@ -224,6 +236,181 @@ const calculateReservationPosts = (apiData) => {
     doc.save("goshwara.pdf");
   };
 
+   const generatePDF2 = () => {
+      const tableData = [];
+      const tableHeaders = [
+        'सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक ) ', 
+        'एकूण मंजूर पदे'
+      ];
+    
+      const docDefinition = {
+        content: [
+          { text: 'पदोन्नती / सरळसेवा भरतीसाठी बिंदू नामावली नोंदवही तपासणी गोषवारा (सरळसेवा) दिनांक: ०१/०८/२०२४', style: 'header' },
+          { text: 'सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )   एकूण मंजूर पदे', style: 'header' },
+          { text: 'सरळसेवा टक्केवारी :- 100%     टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे', style: 'header' },
+          { text: `पदोन्नती / सरळसेवा भरतीसाठी`, style: 'subheader'},
+          { text: `दिनांक :- ${selectedDate}`, style: 'subheader' },
+          {
+            table: {
+              headerRows: 1,
+              widths: [30, 70, 30, 300, 30, 30],
+              body: [
+                tableHeaders,
+                ...tableData
+              ]
+            },
+            layout: {
+           //   hLineColor: 'black', // Horizontal line color
+          //    vLineColor: 'black', // Vertical line color
+            //  hLineWidth: 1, // Horizontal line width
+            //  vLineWidth: 1, // Vertical line width
+           //   paddingLeft: 4, // Left padding for cells
+           //   paddingRight: 4, // Right padding for cells
+           //   paddingTop: 4, // Top padding for cells
+           //   paddingBottom: 4, // Bottom padding for cells
+           //   fillColor: '#f0f0f0', // Background color for header rows
+              defaultBorder: true, // Ensures all cells have borders
+            }
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 12,
+            bold: true,
+            alignment: 'center'
+          },
+          subheader: {
+            fontSize: 10,
+            italics: true,
+            alignment: 'center',
+            margin: [0, 5]
+          },
+          tableHeader: {
+            bold: true,
+            fontSize: 10,
+            color: 'black',
+            alignment: 'center',
+            fillColor: '#d3d3d3'
+          },
+          tableBody: {
+            fontSize: 8,
+            alignment: 'center',
+            border: 1,
+          }
+        },
+        defaultStyle: {
+          font: 'NotoSansDevanagari'
+        }
+      };
+  
+      pdfMake.createPdf(docDefinition).download('goshwara_report.pdf');
+    };
+  
+    const generatePDF = () => {
+      const table = document.getElementById("t1");
+    
+      if (!table) {
+        console.error("Table not found!");
+        return;
+      }
+    
+      // Extract headers
+      const headerCells = [...table.querySelectorAll("thead tr th")];
+      const headers = headerCells.map(th => ({
+        text: th.innerText.trim(),
+        style: 'tableHeader'
+      }));
+    
+      // Total columns
+      const columnCount = headers.length;
+    
+      if (columnCount === 0) {
+        console.error("Table header has no columns.");
+        return;
+      }
+    
+      // Extract rows and ensure all rows have exactly the same number of columns
+      const rows = [...table.querySelectorAll("tbody tr")].map(row => {
+        const cells = [...row.querySelectorAll("td")];
+        const paddedCells = cells.map(td => ({
+          text: td.innerText.trim().toString(),
+          style: 'tableBody'
+        }));
+    
+        // Fill missing columns with empty cells
+        while (paddedCells.length < columnCount) {
+          paddedCells.push({ text: '', style: 'tableBody' });
+        }
+    
+        return paddedCells.slice(0, columnCount); // Trim if too many
+      });
+    
+      const selectedDate = '०१/०८/२०२४'; // replace with dynamic date if needed
+    
+      
+      const docDefinition = {
+        pageSize: 'A4',               // A4 Size
+        pageOrientation: 'landscape',
+        content: [
+          { text: 'परिशिष्ट -3 ', style: 'header' },   
+          { text: 'बिंदूनामावली नोंदवही तपासणी गोषवारा (सरलसेवा) ', style: 'header' }, 
+         //  { text: 'पदोन्नती / सरळसेवा भरतीसाठी बिंदू नामावली नोंदवही तपासणी गोषवारा (सरळसेवा) दिनांक: ०१/०८/२०२४', style: 'header' },
+          { text: 'सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )   एकूण मंजूर पदे', style: 'header' },
+          { text: 'सरळसेवा टक्केवारी :- 100%     टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे', style: 'header' },
+          { text: `प्रवर्ग निहाय आरक्षित बिंदू`, style: 'subheader' },
+       //   { text: `पदोन्नती / सरळसेवा भरतीसाठी`, style: 'subheader' },
+          { text: `दिनांक :- ${selectedDate}`, style: 'subheader' },
+          {
+            table: {
+              headerRows: 1,
+              headerRows: 1,
+        widths: Array(columnCount).fill('auto'),  // prevents overflow
+       // body: [headers, ...rows]
+             // widths: Array(columnCount).fill('*'),
+              body: [headers, ...rows]
+            },
+            layout: {
+              defaultBorder: true
+            }
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 12,
+            bold: true,
+            alignment: 'center'
+          },
+          subheader: {
+            fontSize: 10,
+            italics: true,
+            alignment: 'center',
+            margin: [0, 2]
+          },
+          tableHeader: {
+            bold: true,
+            fontSize: 10,
+            color: 'black',
+            alignment: 'center',
+            fillColor: '#d3d3d3'
+          },
+          tableBody: {
+            fontSize: 10,
+            alignment: 'center'
+          }
+        },
+        defaultStyle: {
+          font: 'NotoSansDevanagari'
+        }
+      };
+    
+      pdfMake.createPdf(docDefinition).download('goshwara_report.pdf');
+    };
+    
+   
+    
+    
+    
+  
 /****** */
 
   return (
@@ -284,63 +471,26 @@ const calculateReservationPosts = (apiData) => {
         {distribution.length > 0 && (
           <div className="overflow-x-auto max-h-96">
             {isVertical ? (
-            <table id="t1" border="1" className="min-w-full bg-white border border-gray-400 shadow-md rounded-lg ">
-            <thead>
-                
-              <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
-                <th className="py-4 px-6 border border-gray-400 text-left">ID</th>
-                <th className="py-4 px-6 border border-gray-400 text-left">Category</th>
-                <th className="py-4 px-6 border border-gray-400 text-right">Percentage</th>
-                <th className="py-4 px-6 border border-gray-400 text-right">Allocated </th>
-                <th className="py-4 px-6 border border-gray-400 text-right">Filled </th>
-                <th className="py-4 px-6 border border-gray-400 text-right"><p>Remaining </p>
-                exceeds  </th> {/* New Column */}
-              </tr>
-            </thead>
-            <tbody>
-              {distribution.map((cat, index) => (
-                <tr
-                  key={cat.id}
-                  className={`${index % 2 === 0 ? "bg-gray-200" : "bg-white"} hover:bg-gray-300 border border-gray-400`}
-                >
-                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-left">{cat.id}</td>
-                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-left">{cat.name}</td>
-                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right">{cat.percentage}%</td>
-                  <td className="py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right">{cat.allocatedSeats}</td>
-                  <td
-                    className={`py-4 px-6 border border-gray-400 text-gray-800 font-medium text-right
-                      ${cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""}`}
-                  >
-                    {cat.filledSeats}
-                  </td>
-                  <td
-                      style={{
-                        padding: "2px",
-                        border: "1px solid gray",
-                        color: "black",
-                        fontWeight: "500",
-                        backgroundColor:
-                          Number(cat.allocatedSeats) - Number(cat.filledSeats)< 0
-                            ? "red"
-                            : Number(cat.allocatedSeats) - Number(cat.filledSeats)=== 0  ? "green":"yellow",
-                      }}      >
-                    {cat.allocatedSeats - cat.filledSeats}
-                  </td>
-                </tr>
-                
-              ))}
-                
-            </tbody>
-          </table>
-          
-            ) : (
               
               <table border="1"  id="t1" width="90%" align="center" className="w-full overflow-auto bg-white border border-gray-400 shadow-md rounded-lg ">
+  <thead>
+  <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
+    <th className="py-4 px-6 border border-gray-400"></th>
+    {distribution.map((cat) => (
+      <th key={`header-""${cat.id}""`} className="py-4 px-6 border border-gray-400"></th>
+    ))}
+  </tr>
+</thead>
+  
   <tbody>
     {/* ID Row */}
   
-    <tr><th colspan="12">पदोन्नती / सरळसेवा भरतीसाठी बिंदू नामावली नोंदवही तपासणी गोषवारा (सरळसेवा)
-दिनांक: ०१/०८/२०२४</th></tr>
+    <tr>
+      <table><tr> <td align="center">पदोन्नती / सरळसेवा भरतीसाठी बिंदू नामावली नोंदवही तपासणी गोषवारा (सरळसेवा)
+      दिनांक: ०१/०८/२०२४</td></tr></table>
+     
+</tr>
+
 <tr>
     <td colspan="6">सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )</td>
     <td colspan="6">एकूण मंजूर पदे</td>
@@ -352,14 +502,6 @@ const calculateReservationPosts = (apiData) => {
 <tr><th colspan="12">पदोन्नती / सरळसेवा भरतीसाठी</th></tr>
 <tr><th colspan="12">&nbsp;
 
-
-
-     
-
-
-      
-  
-  
   </th></tr>
 
 
@@ -516,7 +658,7 @@ const calculateReservationPosts = (apiData) => {
             </tr>
 
             {/* Table Headers */}
-            <tr colSpan="12" style={{ fontWeight: "bold", backgroundColor: "#e6e6e6" }}>
+            <tr  style={{ fontWeight: "bold", backgroundColor: "#e6e6e6" }}>
               <td colSpan="4">पहिल्या वर्षात भरावयाची एकूण पदे</td>
               <td colSpan="4">एकूण भरावयाच्या पदच्या {cat.per}% नुसार येणारी पदे</td>
               <td colSpan="4">या भरती वर्षात {cat.name} प्रवर्गासाठी उपलब्ध पदे</td>
@@ -571,6 +713,225 @@ const calculateReservationPosts = (apiData) => {
   </tbody>
 </table>
 
+
+            ) : (
+              <div className="overflow-x-auto">
+              <table border="1"  id="t1" width="90%" align="center" className="w-full overflow-auto bg-white border border-gray-400 shadow-md rounded-lg ">
+  <thead  style={{ display: 'none' }}>
+  <tr   className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
+    <th className="py-4 px-6 border border-gray-400"></th>
+    {distribution.map((cat) => (
+      <th key={`header-""${cat.id}""`} className="py-4 px-6 border border-gray-400"></th>
+    ))}
+  </tr>
+</thead>
+  
+  <tbody>
+    {/* ID Row */}
+  
+   
+
+    {/* Category Row */}
+    <tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">तपशील </td>
+      {distribution.map((cat) => (
+        <td key={`name-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.name}</td>
+      ))}
+    </tr>
+
+    {/* Allocated Seats Row */}
+    <tr className="bg-white border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">मंजूर पदे</td>
+      {distribution.map((cat) => (
+        <td key={`allocated-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.allocatedSeats}</td>
+      ))}
+    </tr>
+
+    {/* Filled Seats Row */}
+    <tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">भरलेली पदे</td>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+          {cat.filledSeats}
+        </td>
+      ))}
+    </tr>
+
+    {/* Remaining Seats Row */}
+    <tr className="bg-white border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">रिक्त पदे</td>
+      {distribution.map((cat) => {
+        const remainingSeats = - cat.filledSeats + cat.allocatedSeats ;
+        total_Remaining_Seats = distribution.reduce(
+          (total, { allocatedSeats, filledSeats }) => total + (allocatedSeats - filledSeats),
+          0
+        );
+        return (
+          <td
+          style={{
+            padding: "2px",
+            border: "1px solid gray",
+           // color: "black",
+            fontWeight: "500",
+            color:
+              Number(cat.allocatedSeats) - Number(cat.filledSeats)< 0
+                ? "red"
+                : Number(cat.allocatedSeats) - Number(cat.filledSeats)=== 0  ? "green":"blue",
+          }} 
+          >
+            {remainingSeats} 
+                    </td>
+        );
+      })}
+    </tr>
+   
+    <tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">समायोजनाकरिता  पदे </td>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
+    </tr>
+
+    <tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">समायोजनानंतर भरावयाची पदे </td>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
+    </tr>
+
+    <tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">कालावधीत भरावयाची संभाव्य रिक्त पदे</td>
+      {distribution.map((cat) => (
+        <td
+          key={`filled-${cat.id}`}
+          className={`py-4 px-6 border border-gray-400 ${
+            cat.allocatedSeats === cat.filledSeats ? "bg-red-500 text-white" : ""
+          }`}
+        >
+        </td>
+      ))}
+    </tr> 
+
+
+    {/* Remaining Seats Row */}
+<tr className="bg-white border border-gray-400">
+  <td className="py-4 px-6 border border-gray-400">एकूण भरावयाची पदे</td>
+  {distribution.map((cat) => {
+    const remainingSeats = cat.allocatedSeats - cat.filledSeats;
+    return (
+      <td
+        style={{
+          padding: "2px",
+          border: "1px solid gray",
+          color: "black",
+          fontWeight: "500",
+          backgroundColor:
+            remainingSeats < 0
+              ? "white"
+              : remainingSeats === 0
+              ? "white"
+              : "white",
+        }}
+      >
+        {Math.max(remainingSeats, 0)} {/* Ensures only positive or zero */}
+      </td>
+    );
+  })}
+</tr>
+
+    <tr>
+<td colspan="12">भरती वर्ष १</td>
+</tr>
+<tr>
+<td colspan="12">
+  <p> (दिनांक 26.08.2023 ते 23.08.2024)</p>
+  </td>
+  </tr>
+ 
+ 
+
+        { categoryPosts.length > 0 &&  categoryPosts.map((cat, index) => (
+          <React.Fragment key={cat.name}>
+            {/* Category Header Row */}
+            <tr className="bg-gray-200 border border-gray-400">
+              <td colSpan="12" style={{ fontWeight: "bold", padding: "10px", backgroundColor: "#f2f2f2" }}>
+                {cat.name} आरक्षण गणना पत्रक
+              </td>
+            </tr>
+
+            {/* Table Headers */}
+            <tr  style={{ fontWeight: "bold", backgroundColor: "#e6e6e6" }}>
+              <td colSpan="4">पहिल्या वर्षात भरावयाची एकूण पदे</td>
+              <td colSpan="4">एकूण भरावयाच्या पदच्या {cat.per}% नुसार येणारी पदे</td>
+              <td colSpan="4">या भरती वर्षात {cat.name} प्रवर्गासाठी उपलब्ध पदे</td>
+            </tr>
+
+            {/* Data Row */}
+            <tr >
+              <td colSpan="4">{total_Remaining_Seats = total_Remaining_Seats < 0 ? 0 : total_Remaining_Seats}</td>  {/* Keep empty or add dynamic data */}
+              <td colSpan="4">{(cat.per*total_Remaining_Seats)/100} </td>
+              <td colSpan="4">{Math.round(cat.per * (total_Remaining_Seats / 100))}</td>  {/* Keep empty or add dynamic data */}
+            </tr>
+
+            {/* Space Row for Separation */}
+            <tr><td colSpan="12" style={{ height: "10px" }}></td></tr>
+          </React.Fragment>
+        ))}
+ 
+
+
+<tr className="bg-gray-200 border border-gray-400">
+      <td className="py-4 px-6 border border-gray-400">तपशील </td>
+      {distribution.map((cat) => (
+        <td key={`name-${cat.id}`} className="py-4 px-6 border border-gray-400">{cat.name}</td>
+      ))}
+    </tr>
+    {/* Remaining Seats Row */}
+<tr className="bg-white border border-gray-400">
+  <td className="py-4 px-6 border border-gray-400">एकूण भरावयाची पदे</td>
+  {distribution.map((cat) => {
+    const remainingSeats = cat.allocatedSeats - cat.filledSeats;
+    return (
+      <td
+        style={{
+          padding: "2px",
+          border: "1px solid gray",
+          color: "black",
+          fontWeight: "500",
+          backgroundColor:
+            remainingSeats < 0
+              ? "white"
+              : remainingSeats === 0
+              ? "white"
+              : "white",
+        }}
+      >
+        {Math.max(remainingSeats, 0)} {/* Ensures only positive or zero */}
+      </td>
+    );
+  })}
+</tr>
+
+  </tbody>
+</table>
+</div>
 
             )}
 

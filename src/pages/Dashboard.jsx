@@ -30,10 +30,11 @@ const Dashboard = () => {
           <ul>
   <li><Link to="/dashboard/add-employee">Add Employee</Link></li>
   <li><Link to="/dashboard/edit-employee">Edit Employee</Link></li>
-  <li><Link to="/dashboard/show-roster">Show Roster</Link></li>
-  <li><Link to="/dashboard/show-goshwara">Show Goshwara</Link></li>
-  <li><Link to="/dashboard/show-goshwara-by-cat">Show Goshwara By Category</Link></li>
-  <li><Link to="/dashboard/show-resv-dist">Show Resv Dist</Link></li>
+  <li><Link to="/dashboard/show-roster"> Roster</Link></li>
+  <li><Link to="/dashboard/show-goshwara"> Goshwara</Link></li>
+  <li><Link to="/dashboard/show-goshwara-by-cat"> Goshwara By Cat</Link></li>
+  <li><Link to="/dashboard/show-resv-dist"> Resv Dist</Link></li>
+  <li><Link to="/dashboard/add-school-accont">Account Entry</Link></li>
   <li>
               <button 
                 onClick={handleLogout} 
