@@ -13,6 +13,7 @@ import ReservationDistribution from "./pages/ReservationDistribution";
 import Goshwara from "./pages/Goshwara";
 import Goshwarabycat from "./pages/Goshwarabycat";
 import AddSchoolTransaction from "./pages/AddSchoolTransaction";
+import TransactionReport from "./pages/TransactionReport";
 //import EditEmployee from "./pages/EmployeeEdit";
 
 const AppRouter = () => {
@@ -33,6 +34,7 @@ const AppRouter = () => {
             <Route path="show-goshwara-by-cat" element={<Goshwarabycat />} />
             <Route path="show-resv-dist" element={<ReservationDistribution />} />
             <Route path="add-school-accont" element={<AddSchoolTransaction />} />
+            <Route path="transaction-report" element={<TransactionReport />} />
           </Route>
         </Routes>
       </Router>
