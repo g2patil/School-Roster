@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import config from "../config";
+import { useAuth } from '../context/AuthContext';
 
 
-const AddSchoolTransaction = () => {
+const AddSalaryTransaction = () => {
+    const { userInfo } = useAuth();
   const [formData, setFormData] = useState({
     transactionDate: '',
     amount: '',
@@ -12,7 +14,9 @@ const AddSchoolTransaction = () => {
     accountSubHeadId: '',
     accountTypeId: '',
     accountMainHeadId: '',
-    userId: 2,
+    userId: userInfo.userId,
+    voucher_no:'',
+    lf_no:'',
     cash_bank:'',
   });
 
@@ -98,6 +102,8 @@ const handleSubmit = async (e) => {
     accountMainHead: Number(formData.accountMainHeadId),
     accountSubHead: Number(formData.accountSubHeadId),
     cash_bank: formData.cash_bank,
+    voucher_no: formData.voucher_no,
+    lf_no: formData.lf_no,
     user: formData.userId
   };
 
@@ -181,7 +187,7 @@ const handleSubmit = async (e) => {
   return (
     <div className="form-container">
     <div style={{ padding: '10px', width: '95%', overflowX: 'auto', textAlign: 'center' }}>
-      <h2>Add School Transaction</h2>
+      <h2>Add Salary Transaction</h2>
       <form
   onSubmit={handleSubmit}
   style={{
@@ -263,6 +269,32 @@ const handleSubmit = async (e) => {
       required
     />
   </div>
+
+  {/* Voucher No */}
+<div style={{ display: 'flex', flexDirection: 'column', minWidth: '50px' }}>
+  <label style={{ marginBottom: '6px', fontWeight: '500' }}>Voucher No</label>
+  <input
+    type="text"
+    name="voucher_no"
+    value={formData.voucher_no}
+    onChange={handleChange}
+    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+    required
+  />
+</div>
+
+ {/* Voucher No */}
+ <div style={{ display: 'flex', flexDirection: 'column', minWidth: '50px' }}>
+  <label style={{ marginBottom: '6px', fontWeight: '500' }}>lf No</label>
+  <input
+    type="text"
+    name="lf_no"
+    value={formData.lf_no}
+    onChange={handleChange}
+    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+    required
+  />
+</div>
 
   {/* Amount */}
   <div style={{ display: 'flex', flexDirection: 'column', minWidth: '130px' }}>
@@ -408,4 +440,4 @@ const handleSubmit = async (e) => {
   );
 };
 
-export default AddSchoolTransaction;
+export default AddSalaryTransaction;

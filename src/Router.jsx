@@ -14,6 +14,8 @@ import Goshwara from "./pages/Goshwara";
 import Goshwarabycat from "./pages/Goshwarabycat";
 import AddSchoolTransaction from "./pages/AddSchoolTransaction";
 import TransactionReport from "./pages/TransactionReport";
+import CombTransactionReport from "./pages/CombTransactionReport";
+import AddSalaryTransaction from "./pages/AddSalaryTransaction";
 //import EditEmployee from "./pages/EmployeeEdit";
 
 const AppRouter = () => {
@@ -35,6 +37,8 @@ const AppRouter = () => {
             <Route path="show-resv-dist" element={<ReservationDistribution />} />
             <Route path="add-school-accont" element={<AddSchoolTransaction />} />
             <Route path="transaction-report" element={<TransactionReport />} />
+            <Route path="comb-transaction-report" element={<CombTransactionReport />} />
+            <Route path="add-salary-accont" element={<AddSalaryTransaction />} />
           </Route>
         </Routes>
       </Router>

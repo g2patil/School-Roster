@@ -23,8 +23,8 @@ const Goshwara = () => {
   });
   const [categories, setCategories] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
-  useEffect(() => {
-    fetch(`${config.API_URL}/EmployeeRoster/goshwara_by_cat?s=1`, {
+  useEffect((empId) => {
+    fetch(`${config.API_URL}/EmployeeRoster/goshwara_by_cat?s=${empId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

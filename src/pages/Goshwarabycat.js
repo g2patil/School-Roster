@@ -68,7 +68,7 @@ const [categoryPosts, setCategoryPosts] = useState([]);
 /************
 const [userInfo, setUserInfo] = useState(null);
 useEffect(() => {
-  fetch("http://192.168.1.114:8082/adnya/userinfo", {
+  {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
