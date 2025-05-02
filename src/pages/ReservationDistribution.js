@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import config from "../config";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "../fonts/NotoFonts"; // adjust based on where your font is
+import { useAuth } from '../context/AuthContext';
+
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -14,7 +16,7 @@ pdfMake.fonts = {
   }
 };
 
-const Goshwara = () => {
+const ReservationDistribution = () => {
   const [totalSeats, setTotalSeats] = useState(0);
   const [distribution, setDistribution] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -22,9 +24,14 @@ const Goshwara = () => {
     return today;
   });
   const [categories, setCategories] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
-  useEffect((empId) => {
-    fetch(`${config.API_URL}/EmployeeRoster/goshwara_by_cat?s=${empId}`, {
+//  const [isVisible, setIsVisible] = useState(false);
+const { userInfo } = useAuth();
+
+//const instituteId = userInfo?.institute?.id;
+
+
+  useEffect(() => {
+    fetch(`${config.API_URL}/EmployeeRoster/goshwara_by_cat?s=${userInfo.instituteId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +50,7 @@ const Goshwara = () => {
         setCategories(transformed);
       })
       .catch((error) => console.error("Error fetching API data:", error));
-  }, [selectedDate]);
+  }, [userInfo.instituteId]);
 
   const calculateDistribution = () => {
     let calculated = categories.map((category) => {
@@ -156,7 +163,7 @@ const Goshwara = () => {
           <input
             type="number"
             value={totalSeats}
-            style={{ visibility: isVisible ? "visible" : "hidden" }}
+          //  style={{ visibility: isVisible ? "visible" : "hidden" }}
             onChange={(e) => setTotalSeats(Number(e.target.value))}
             placeholder="Enter total seats"
             className="border border-gray-400 p-3 rounded w-full mb-4 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -232,4 +239,4 @@ const Goshwara = () => {
   );
 };
 
-export default Goshwara;
+export default ReservationDistribution;

@@ -74,11 +74,20 @@ const TransactionReport = () => {
     const doc = new jsPDF();
   
     // Set page dimensions
-    doc.internal.pageSize.width = 210; // A4 page width
-    doc.internal.pageSize.height = 297; // A4 page height
+    doc.internal.pageSize.width = 297 ;//210; // A4 page width
+    doc.internal.pageSize.height = 210;//297; // A4 page height
   
     const tableColumn = [
       'Date',
+      'Voucher No.',
+      'Particular',
+      'Txn ID',
+      'L/F',
+      'Cash Amount',
+      'Bank Amount',
+      'Saving Bank Amount',
+      'Date',
+      'Voucher No.',
       'Particular',
       'Txn ID',
       'L/F',
@@ -91,19 +100,31 @@ const TransactionReport = () => {
     let totalCashAmount = 0;
     let totalBankAmount = 0;
     let totalsavingBankAmount = 0;
+    let totalCashAmount1 = 0;
+    let totalBankAmount1 = 0;
+    let totalsavingBankAmount1 = 0;
     let startY = 30;  // Starting Y for the table
     let pageHeight = doc.internal.pageSize.height;
     let currentPageHeight = startY;  // Track the current height on the page
   
     transactions.forEach((txn, index) => {
       const txnData = [
-        txn[0],                           // Date
-        txn[1] + "\n  " + txn[2],  // Particular with line break
-        txn[3],                            // Txn ID
-        txn[5],                            // Description (L/F)
+        txn[3],
+        txn[1],                            // Date
+        txn[4] + "\n  " + txn[8],  // Particular with line break
+        txn[6],                            // Txn ID
+        txn[2],                            // Description (L/F)
         txn[9]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
         txn[10]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
-        txn[11]?.toFixed(2) || '0.00'                   // Bank Amount (right-aligned)
+        txn[11]?.toFixed(2) || '0.00',
+        txn[15],
+        txn[13],                            // Date
+        txn[16] + "\n  " + txn[20],  // Particular with line break
+        txn[18],                            // Txn ID
+        txn[14],                            // Description (L/F)
+        txn[21]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
+        txn[22]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
+        txn[23]?.toFixed(2) || '0.00'                   // Bank Amount (right-aligned)
       ];
   
       tableRows.push(txnData);
@@ -115,6 +136,10 @@ const TransactionReport = () => {
    totalCashAmount += parseFloat(txn[9] || 0);
    totalBankAmount += parseFloat(txn[10] || 0);
    totalsavingBankAmount += parseFloat(txn[11] || 0);
+
+   totalCashAmount1 += parseFloat(txn[21] || 0);
+   totalBankAmount1 += parseFloat(txn[22] || 0);
+   totalsavingBankAmount1 += parseFloat(txn[23] || 0);
   
       const tableHeight = 12; // Approximate height per row, adjust if necessary
   
@@ -128,30 +153,44 @@ const TransactionReport = () => {
           styles: {
             fontSize: 6,
             cellPadding: 2, // Reduced padding for a tighter table
+            border:2,
           },
           headStyles: {
-            fillColor: [22, 160, 133],  // Green header color
-            textColor: 255,             // White text color
+            fillColor: [220, 0, 133],  // Green header color
+            textColor: 0,             // White text color
             fontSize: 8,
           },
           alternateRowStyles: {
-            fillColor: [240, 240, 240], // Light grey for alternate rows
+            fillColor: [240, 40, 240], // Light grey for alternate rows
           },
           columnStyles: {
-            4: { halign: 'right' },      // Right-align Cash Amount column
-            5: { halign: 'right' },      // Right-align Bank Amount column
+            5: { halign: 'right' },      // Right-align Cash Amount column
+            6: { halign: 'right' }, 
+            7: { halign: 'right' },     // Right-align Bank Amount column
+            13: { halign: 'right' },      // Right-align Cash Amount column
+            14: { halign: 'right' }, 
+            15: { halign: 'right' }, 
           }
         });
   
         // Add footer with totals for the current page
         const footerData = [
-          '',                            // Empty for Date column
+          'a', 
+          'b',                           // Empty for Date column
           'Total',                        // "Total" for Particular column
-          '',                            // Empty for Txn ID column
-          '',                            // Empty for L/F column
+          'd',                            // Empty for Txn ID column
+          'e',                            // Empty for L/F column
           totalCashAmount,    // Cash Amount Total
           totalBankAmount,     // Bank Amount Total
-          totalsavingBankAmount
+          totalsavingBankAmount,
+          'i', 
+          'j',                           // Empty for Date column
+          'Total',                        // "Total" for Particular column
+          'l',                            // Empty for Txn ID column
+          'm',                            // Empty for L/F column
+          totalCashAmount1,    // Cash Amount Total
+          totalBankAmount1,     // Bank Amount Total
+          totalsavingBankAmount1
         ];
   
         let footerY = currentPageHeight + tableRows.length * tableHeight + 5;  // Footer position
@@ -171,10 +210,15 @@ const TransactionReport = () => {
             fontSize: 8,
             cellPadding: 2,
             halign: 'right',             // Right-align Cash Amount and Bank Amount
+            border:2,
           },
           columnStyles: {
-            4: { halign: 'right' },      // Right-align Cash Amount column in footer
-            5: { halign: 'right' },      // Right-align Bank Amount column in footer
+            5: { halign: 'right' },      // Right-align Cash Amount column
+            6: { halign: 'right' }, 
+            7: { halign: 'right' }, 
+            13: { halign: 'right' },      // Right-align Cash Amount column
+            14: { halign: 'right' }, 
+            15: { halign: 'right' },       // Right-align Bank Amount column in footer
           },
           margin: { left: 14 },          // Set left margin to match the table
         });
@@ -182,6 +226,10 @@ const TransactionReport = () => {
         // Reset totals and prepare for the next page
         totalCashAmount = 0;
         totalBankAmount = 0;
+        totalsavingBankAmount = 0;
+        totalCashAmount1 = 0;
+        totalBankAmount1 = 0;
+        totalsavingBankAmount1 = 0;
         tableRows.length = 0;  // Clear the rows for the next page
         currentPageHeight = 30;  // Reset currentPageHeight for the new page
         doc.addPage();  // Add a new page
@@ -197,9 +245,12 @@ const TransactionReport = () => {
         styles: {
           fontSize: 6,
           cellPadding: 2, // Reduced padding for a tighter table
+          border:2,
+          lineColor: [0, 0, 0], 
+          lineWidth: 0.5,
         },
         headStyles: {
-          fillColor: [22, 160, 133],  // Green header color
+          fillColor: [220, 160, 133],  // Green header color
           textColor: 255,             // White text color
           fontSize: 8,
         },
@@ -207,20 +258,35 @@ const TransactionReport = () => {
           fillColor: [240, 240, 240], // Light grey for alternate rows
         },
         columnStyles: {
-          4: { halign: 'right' },      // Right-align Cash Amount column
-          5: { halign: 'right' },      // Right-align Bank Amount column
+          5: { halign: 'right' },      // Right-align Cash Amount column
+          6: { halign: 'right' }, 
+          7: { halign: 'right' },      // Right-align Cash Amount column
+          13: { halign: 'right' },      // Right-align Cash Amount column
+          14: { halign: 'right' }, 
+          15: { halign: 'right' },    // Right-align Bank Amount column
         }
       });
   
       // Add footer with totals for the last page
       const footerData = [
-        '',                            // Empty for Date column
+        'A',  
+        'B',                          // Empty for Date column
         'Total',                        // "Total" for Particular column
-        '',                            // Empty for Txn ID column
-        '',                            // Empty for L/F column
+        'D',                            // Empty for Txn ID column
+        'E', 
+                                // Empty for L/F column
         totalCashAmount,    // Cash Amount Total
         totalBankAmount,     // Bank Amount Total
-        totalsavingBankAmount
+        totalsavingBankAmount,
+        'I',  
+        'J', 
+                               // Empty for Date column
+        'Total',                        // "Total" for Particular column
+        'L',                            // Empty for Txn ID column
+        'M',                            // Empty for L/F column
+        totalCashAmount1,    // Cash Amount Total
+        totalBankAmount1,     // Bank Amount Total
+        totalsavingBankAmount1
       ];
   
       let footerY = currentPageHeight + tableRows.length * 12 + 5;  // Footer position
@@ -239,11 +305,19 @@ const TransactionReport = () => {
         styles: {
           fontSize: 8,
           cellPadding: 2,
+          cellspacing: 2,
+          border:2,
+          lineColor: [0, 0, 0], 
+          lineWidth: 0.5,
           halign: 'right',             // Right-align Cash Amount and Bank Amount
         },
         columnStyles: {
-          4: { halign: 'right' },      // Right-align Cash Amount column in footer
-          5: { halign: 'right' },      // Right-align Bank Amount column in footer
+            5: { halign: 'right' },      // Right-align Cash Amount column
+            6: { halign: 'right' }, 
+            7: { halign: 'right' }, 
+            13: { halign: 'right' },      // Right-align Cash Amount column
+            14: { halign: 'right' }, 
+            15: { halign: 'right' },      // Right-align Bank Amount column in footer
         },
         margin: { left: 14 },          // Set left margin to match the table
       });
