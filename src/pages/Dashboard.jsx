@@ -36,7 +36,7 @@ const Dashboard = () => {
             <li><Link to="/dashboard/show-roster">Roster</Link></li>
             <li><Link to="/dashboard/show-goshwara">Goshwara</Link></li>
             <li><Link to="/dashboard/show-goshwara-by-cat">Goshwara By Cat</Link></li>
-            <li><Link to="/dashboard/show-resv-dist">Resv Dist</Link></li>
+           
 
             {/* Account Entry Menu with Submenu */}
             <li className="submenu">
@@ -50,13 +50,13 @@ const Dashboard = () => {
               </button>
               {isSubMenuOpen && (
                 <ul className="submenu-items">
-                  <li><Link to="/dashboard/add-school-accont">Add Account</Link></li>
-                  <li><Link to="/dashboard/transaction-report">Account Report</Link></li>
-                  <li><Link to="/dashboard/add-salary-accont">Add Salary Account</Link></li>
-                  <li><Link to="/dashboard/comb-transaction-report">comb Account Report</Link></li>
+                        <li><Link to="/dashboard/add-salary-accont">Add </Link></li>
+                  <li><Link to="/dashboard/comb-transaction-report">Report</Link></li>
                 
                   
-                  {/* You can add more links here as needed */}
+                  {/*  <li><Link to="/dashboard/add-school-accont">Add Account</Link></li>
+                  <li><Link to="/dashboard/transaction-report">Account Report</Link></li>
+           You can add more links here as needed */}
                 </ul>
               )}
             </li>

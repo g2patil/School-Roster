@@ -1,0 +1,131 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2f2f2f;
+  color: white;
+  padding: 10px 30px;
+  width: 92%;
+ margin-left: 10px;
+  flex-wrap: wrap;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo {
+  height: 60px;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    display: block; /* Ensure it's not hidden */
+  }
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Hamburger menu */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Menu section */
+.navbar-right {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.navbar-right a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.navbar-right a:hover {
+  text-decoration: underline;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+
+.dropdown button {
+  background:transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color:black;
+  min-width: 120px;
+  border: 1px solid #f90000;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background-color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .navbar-right {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+
+  .navbar-right.open {
+    display: flex;
+  }
+
+  .dropdown-content {
+    position: static;
+    border: none;
+    background-color: transparent;
+  }
+
+  .dropdown-content a,
+  .dropdown-content button {
+    padding: 8px 0;
+  }
+}

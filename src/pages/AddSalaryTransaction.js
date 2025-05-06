@@ -89,7 +89,7 @@ const AddSalaryTransaction = () => {
   };
 
  
-
+/*
 const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -128,7 +128,7 @@ const handleSubmit = async (e) => {
       accountTypeId: '',
       accountMainHeadId: '',
       userId: 2,
-    });*/
+    });*//*
     //if (!lastTransaction) {
       await fetchLastTransaction();
    // }
@@ -136,7 +136,7 @@ const handleSubmit = async (e) => {
     alert('Failed to add transaction');
   }
 };
-
+*/
 
   const [lastTransaction, setLastTransaction] = useState(null);
   const fetchLastTransaction = async () => {
@@ -171,14 +171,129 @@ const handleSubmit = async (e) => {
     fetchLastTransaction();
   },[]);
 
-  const handleModify = (id) => {
-    alert(`Modify clicked for transaction ID: ${id}`);
+  const [editId, setEditId] = useState(null);
+
+  const handleModify = async (id) => {
+    try {
+      const res = await fetch(`${config.API_URL}/school/account/transaction/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+  
+      if (!res.ok) {
+        alert('Failed to fetch transaction details');
+        return;
+      }
+  
+      const data = await res.json();
+  
+      setFormData({
+        transactionDate: data.transactionDate,
+        amount: data.amount,
+        paymentMode: data.paymentMode,
+        description: data.description,
+        accountSubHeadId: data.accountSubHead.accountSubHeadId,
+        accountTypeId: data.accountType.accountTypeId,
+        accountMainHeadId: data.accountMainHead.accountMainHeadId,
+        userId: data.user,
+        voucher_no: data.voucher_no || '',
+        lf_no: data.lf_no || '',
+        cash_bank: data.cash_bank || '',
+      });
+  
+      setEditId(id); // Track if it's an update
+  
+    } catch (err) {
+      console.error('Error fetching transaction:', err);
+      alert('Error fetching transaction');
+    }
   };
   
-  const handleDelete = (id) => {
-    alert(`Delete clicked for transaction ID: ${id}`);
-  };
+  
+ // const handleDelete
 
+  const handleDelete = async (id) => {
+   // if (!window.confirm(`Are you sure you want to delete transaction ID: ${id}?`)) return;
+  
+    try {
+      const response = await fetch(`${config.API_URL}/school/account/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        alert('Transaction deleted successfully');
+        fetchLastTransaction(); // Refresh the transaction list if needed
+      } else {
+        alert('Failed to delete transaction');
+        console.error('Failed response:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert('An error occurred while deleting the transaction');
+    }
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    const payload = {
+      transactionDate: formData.transactionDate,
+      amount: parseFloat(formData.amount),
+      paymentMode: formData.paymentMode ,
+      description: formData.description,
+      accountType: { accountTypeId: Number(formData.accountTypeId) },
+      accountMainHead: Number(formData.accountMainHeadId),
+      accountSubHead: Number(formData.accountSubHeadId),
+      cash_bank: formData.cash_bank,
+      voucher_no: formData.voucher_no,
+      lf_no: formData.lf_no,
+      user: formData.userId,
+    };
+   console.log("editId"+editId +"  "+JSON.stringify(payload));
+    const url = editId
+      ? `${config.API_URL}/school/account/update/${editId}`
+      : `${config.API_URL}/school/account/add`;
+  
+    const method = editId ? 'PUT' : 'POST';
+  
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+
+    if (!formData.accountMainHeadId || isNaN(formData.accountMainHeadId)) {
+      alert("Please select a valid Main Account Head.");
+      return;
+    }
+  
+    if (response.ok) {
+      alert(editId ? 'Transaction updated successfully' : 'Transaction added successfully');
+      setEditId(null);
+
+    /*  setFormData({
+        transactionDate: '',
+        amount: '',
+        paymentMode: '',
+        cash_bank: '',
+        description: '',
+        accountSubHeadId: '',
+        accountTypeId: '',
+        accountMainHeadId: '',
+        userId: 2,
+      });*/
+      fetchLastTransaction();
+    } else {
+      alert('Failed to submit transaction');
+    }
+  };
+  
   
 
   
@@ -228,6 +343,7 @@ const handleSubmit = async (e) => {
       onChange={handleChange}
       style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
       disabled={!formData.accountTypeId}
+      required
     >
       <option value="">Select</option>
       {mainHeads.map((head) => (

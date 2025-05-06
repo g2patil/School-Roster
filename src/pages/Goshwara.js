@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import config from "../config";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -18,13 +18,21 @@ pdfMake.fonts = {
   }
 };
 
+
+
 const Goshwara = () => {
+  const { userInfo } = useAuth();
   const [totalSeats, setTotalSeats] = useState(0);
   const [resvSeats, setResvSeats] = useState(0);
   const [distribution, setDistribution] = useState([]);
   const [apiData, setApiData] = useState({});
   const [isVertical, setIsVertical] = useState(true);
-  const { userInfo } = useAuth();
+  const [categories, setCategories] = useState([]);
+  const [categoryPosts, setCategoryPosts] = useState([]);
+  const [totOccupiedSeat, setTotOccupiedSeat] = useState(0);
+  const [totalRemainingSeats, setTotalRemainingSeats] = useState(0);
+
+
   let tot_occupied_seat=0;
   let total_Remaining_Seats=0;
  // const [selectedDate, setSelectedDate] = useState("");
@@ -34,7 +42,9 @@ const [selectedDate, setSelectedDate] = useState(() => {
 });
 //const [calculatedReservations, setCalculatedReservations] = useState([]);
  
-const [categories, setCategories] = useState([]);
+
+
+
 
   useEffect(() => {
     fetch(`${config.API_URL}/EmployeeRoster/resv_per_by_date?s=${selectedDate}`, {
@@ -62,8 +72,10 @@ const [categories, setCategories] = useState([]);
 
   
 
-const [categoryPosts, setCategoryPosts] = useState([]);
+
 /************* */
+
+
 useEffect(() => {
   if (!selectedDate) return;
 
@@ -112,7 +124,13 @@ const calculateReservationPosts = (apiData) => {
  
 /*************/
 //console.log(selectedDate.trim());
+ 
   useEffect(() => {
+
+  
+  
+   // if (!userInfo || !userInfo.instituteId) return; 
+
     fetch(`${config.API_URL}/EmployeeRoster/summary/${userInfo.instituteId}?s=${selectedDate}`, {
       method: 'GET',
       headers: {
@@ -135,7 +153,7 @@ const calculateReservationPosts = (apiData) => {
         }
       })
       .catch((error) => console.error("Error fetching API data:", error));
-  }, [selectedDate]); 
+  }, [userInfo,selectedDate]); 
   
   const handleSeatsChange = (e) => {
     const value = Number(e.target.value);
@@ -148,9 +166,7 @@ const calculateReservationPosts = (apiData) => {
   );
   };
 
-  const [totOccupiedSeat, setTotOccupiedSeat] = useState(0);
-  const [totalRemainingSeats, setTotalRemainingSeats] = useState(0);
-
+  
 
   const calculateDistribution = () => {
     let allocatedSeats = 0;
@@ -184,28 +200,7 @@ const calculateReservationPosts = (apiData) => {
     setTotalRemainingSeats(totalSeats - totalFilled); // <== Set to state
   };
   
-    const calculateDistribution1 = () => {
-    let allocatedSeats = 0;
-    let calculated = categories.map((category) => {
-      const seats = Math.round((category.percentage / 100) * totalSeats);
-      allocatedSeats += seats;
-      return {
-        id: category.id,
-        name: category.name,
-        percentage: category.percentage,
-        allocatedSeats: seats,
-        filledSeats: apiData[category.id] ? parseInt(apiData[category.id], 10) : 0, // Get filled data by ID
-      };
-    });
 
-    // Adjust Open Category seats if there's a rounding difference
-    const openCategory = calculated.find((cat) => cat.id === 11);
-    if (openCategory) {
-      openCategory.allocatedSeats += totalSeats - allocatedSeats;
-    }
-
-    setDistribution(calculated);
-  };
 
   /************ */
  
@@ -232,7 +227,7 @@ const calculateReservationPosts = (apiData) => {
           while (tableMatrix[rowIndex][colIndex]) colIndex++;
     
           const rowspan = parseInt(cell.getAttribute("rowspan") || "1", 10);
-          const colspan = parseInt(cell.getAttribute("colspan") || "1", 10);
+          const colSpan = parseInt(cell.getAttribute("colSpan") || "1", 10);
     
           const cellObj = {
             text: cell.innerText.trim(),
@@ -240,21 +235,21 @@ const calculateReservationPosts = (apiData) => {
           };
     
           if (rowspan > 1) cellObj.rowSpan = rowspan;
-          if (colspan > 1) cellObj.colSpan = colspan;
+          if (colSpan > 1) cellObj.colSpan = colSpan;
     
           // Place the real cell
           tableMatrix[rowIndex][colIndex] = cellObj;
     
           // Fill placeholder cells
           for (let rs = 0; rs < rowspan; rs++) {
-            for (let cs = 0; cs < colspan; cs++) {
+            for (let cs = 0; cs < colSpan; cs++) {
               if (rs === 0 && cs === 0) continue;
               if (!tableMatrix[rowIndex + rs]) tableMatrix[rowIndex + rs] = [];
               tableMatrix[rowIndex + rs][colIndex + cs] = {};
             }
           }
     
-          colIndex += colspan;
+          colIndex += colSpan;
         });
     
         maxCols = Math.max(maxCols, tableMatrix[rowIndex].length);
@@ -274,8 +269,7 @@ const calculateReservationPosts = (apiData) => {
           { text: "सवर्गांची नाव शिक्षक (माध्यमिक आणि उच्च माध्यमिक)        एकूण मंजूर पदे :- "+`${totalSeats}`, style: "header" },
           { text: "सरळसेवा टक्केवारी :- 100%     टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे", style: "header" },
           { text: "प्रवर्ग निहाय आरक्षित बिंदू", style: "subheader" },
-         // { text: "मंजूर पदे :-"+`${totalSeats}`+"                                      भरलेली पदे :-"+`${tot_occupied_seat}`+"                         रिक्त पदे :- "+`${total_Remaining_Seats}`, style: "subheader" },
-         { text: "मंजूर पदे :-"+`${totalSeats}`+
+            { text: "मंजूर पदे :-"+`${totalSeats}`+
         "    भरलेली पदे :-"+`${totOccupiedSeat}`+
         "    रिक्त पदे :- "+`${totalRemainingSeats}`, style: "subheader" },
 
@@ -319,18 +313,7 @@ const calculateReservationPosts = (apiData) => {
     
       pdfMake.createPdf(docDefinition).download("goshwara_report.pdf");
     };
-    
-    
-    
-    
-   
-    
-    
-    
-  
-/****** */
-
-  return (
+   return (
     <div className="form-container">
     <div className="flex flex-col items-center p-6 min-h-screen bg-gray-100">
       <div className="bg-white shadow-xl rounded-lg p-6 w-full max-w-4xl text-center border border-gray-300">
@@ -356,10 +339,7 @@ const calculateReservationPosts = (apiData) => {
         <input
           type="number"
           value={totalSeats}
-       //   onChange={(e) => setTotalSeats(Number(e.target.value))}
-       //   value={resvSeats} // You can also use totalSeats; both will have the same value
           onChange={handleSeatsChange}
-
           placeholder="Enter total seats"
           className="border border-gray-400 p-3 rounded w-full mb-4 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -392,10 +372,8 @@ const calculateReservationPosts = (apiData) => {
   <table border="1"  id="t0" width="90%" align="center" className="w-full overflow-auto bg-white border border-gray-400 shadow-md rounded-lg ">
   <thead>
   <tr className="bg-blue-600 text-white text-lg font-semibold border border-gray-400">
-    <th className="py-4 px-6 border border-gray-400"></th>
-    {distribution.map((cat) => (
-      <th key={`header-""${cat.id}""`} className="py-4 px-6 border border-gray-400"></th>
-    ))}
+   
+  
   </tr>
 </thead>
   
@@ -409,15 +387,15 @@ const calculateReservationPosts = (apiData) => {
 </tr>
 
 <tr>
-    <td colspan="6">सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )</td>
-    <td colspan="6">एकूण मंजूर पदे</td>
+    <td colSpan="6">सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )</td>
+    <td colSpan="6">एकूण मंजूर पदे</td>
 </tr>
 <tr>
-    <td colspan="6">सरळसेवा टक्केवारी :- 100%</td>
-    <td colspan="6">टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे</td>
+    <td colSpan="6">सरळसेवा टक्केवारी :- 100%</td>
+    <td colSpan="6">टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे</td>
 </tr>
-<tr><th colspan="12">पदोन्नती / सरळसेवा भरतीसाठी</th></tr>
-<tr><th colspan="12">&nbsp;
+<tr><th colSpan="12">पदोन्नती / सरळसेवा भरतीसाठी</th></tr>
+<tr><th colSpan="12">&nbsp;
 
   </th></tr>
 </table>
@@ -554,12 +532,8 @@ const calculateReservationPosts = (apiData) => {
         {Math.max(remainingSeats, 0)} {/* Ensures only positive or zero */}
       </td>
     );
-  })}
+  })}  
 </tr>
-
-
- 
- 
 
         { categoryPosts.length > 0 &&  categoryPosts.map((cat, index) => (
           <React.Fragment key={cat.name}>
@@ -576,9 +550,6 @@ const calculateReservationPosts = (apiData) => {
               (दिनांक DD.MM.YYYY ते DD.MM.YYYY)
               </td>
             </tr>
-
-
-
             <tr className="bg-gray-200 border border-gray-400">
               <td colSpan="12" style={{ fontWeight: "bold", padding: "10px", backgroundColor: "#f2f2f2" }}>
                 {cat.name} आरक्षण गणना पत्रक
@@ -686,15 +657,15 @@ const calculateReservationPosts = (apiData) => {
 </tr>
 
 <tr>
-    <td colspan="6">सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )</td>
-    <td colspan="6">एकूण मंजूर पदे</td>
+    <td colSpan="6">सवर्गांची नाव शिक्षक  ( माध्यमिक आणि उच्च माध्यमिक )</td>
+    <td colSpan="6">एकूण मंजूर पदे</td>
 </tr>
 <tr>
-    <td colspan="6">सरळसेवा टक्केवारी :- 100%</td>
-    <td colspan="6">टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे</td>
+    <td colSpan="6">सरळसेवा टक्केवारी :- 100%</td>
+    <td colSpan="6">टक्केवारीनुसार सरळ सेवेसाठी उपलब्ध पदे</td>
 </tr>
-<tr><th colspan="12">पदोन्नती / सरळसेवा भरतीसाठी</th></tr>
-<tr><th colspan="12">&nbsp;
+<tr><th colSpan="12">पदोन्नती / सरळसेवा भरतीसाठी</th></tr>
+<tr><th colSpan="12">&nbsp;
 
   </th></tr>
 </table>

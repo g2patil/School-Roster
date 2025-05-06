@@ -60,278 +60,129 @@ const TransactionReport = () => {
     }
   };
 
- 
-  
-
-
-
   const exportToPDF = () => {
-    if (transactions.length === 0) {
-      alert('No transactions to export.');
-      return;
-    }
+    const doc = new jsPDF('l', 'mm', 'A4');
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const columnCount = 16;
+    const columnWidth = (pageWidth - 28) / columnCount;
   
-    const doc = new jsPDF();
-  
-    // Set page dimensions
-    doc.internal.pageSize.width = 297 ;//210; // A4 page width
-    doc.internal.pageSize.height = 210;//297; // A4 page height
-  
-    const tableColumn = [
-      'Date',
-      'Voucher No.',
-      'Particular',
-      'Txn ID',
-      'L/F',
-      'Cash Amount',
-      'Bank Amount',
-      'Saving Bank Amount',
-      'Date',
-      'Voucher No.',
-      'Particular',
-      'Txn ID',
-      'L/F',
-      'Cash Amount',
-      'Bank Amount',
-      'Saving Bank Amount'
+    const columns = [
+      'Date', 'Voucher No.', 'Particular', 'Txn ID', 'L/F',
+      'Cash Amt', 'Bank Amt', 'Saving Amt',
+      'Date', 'Voucher No.', 'Particular', 'Txn ID', 'L/F',
+      'Cash Amt', 'Bank Amt', 'Saving Amt'
     ];
   
-    const tableRows = [];
-    let totalCashAmount = 0;
-    let totalBankAmount = 0;
-    let totalsavingBankAmount = 0;
-    let totalCashAmount1 = 0;
-    let totalBankAmount1 = 0;
-    let totalsavingBankAmount1 = 0;
-    let startY = 30;  // Starting Y for the table
-    let pageHeight = doc.internal.pageSize.height;
-    let currentPageHeight = startY;  // Track the current height on the page
+    const rows = transactions.map(txn => ([
+      txn[3], txn[1], `${txn[4]}\n${txn[8]}`, txn[6], txn[2],
+      (txn[9] || 0).toFixed(2), (txn[10] || 0).toFixed(2), (txn[11] || 0).toFixed(2),
+      txn[15], txn[13], `${txn[16]}\n${txn[20]}`, txn[18], txn[14],
+      (txn[21] || 0).toFixed(2), (txn[22] || 0).toFixed(2), (txn[23] || 0).toFixed(2)
+    ]));
   
-    transactions.forEach((txn, index) => {
-      const txnData = [
-        txn[3],
-        txn[1],                            // Date
-        txn[4] + "\n  " + txn[8],  // Particular with line break
-        txn[6],                            // Txn ID
-        txn[2],                            // Description (L/F)
-        txn[9]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
-        txn[10]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
-        txn[11]?.toFixed(2) || '0.00',
-        txn[15],
-        txn[13],                            // Date
-        txn[16] + "\n  " + txn[20],  // Particular with line break
-        txn[18],                            // Txn ID
-        txn[14],                            // Description (L/F)
-        txn[21]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
-        txn[22]?.toFixed(2) || '0.00',                 // Cash Amount (right-aligned)
-        txn[23]?.toFixed(2) || '0.00'                   // Bank Amount (right-aligned)
-      ];
+    let pageSubtotals = {};
   
-      tableRows.push(txnData);
-  
-      // Accumulate totals for Cash and Bank Amounts
-    //  totalCashAmount += txn[9]?.toFixed(2) || 0;
-   //   totalBankAmount += txn[10]?.toFixed(2) || 0;
-
-   totalCashAmount += parseFloat(txn[9] || 0);
-   totalBankAmount += parseFloat(txn[10] || 0);
-   totalsavingBankAmount += parseFloat(txn[11] || 0);
-
-   totalCashAmount1 += parseFloat(txn[21] || 0);
-   totalBankAmount1 += parseFloat(txn[22] || 0);
-   totalsavingBankAmount1 += parseFloat(txn[23] || 0);
-  
-      const tableHeight = 12; // Approximate height per row, adjust if necessary
-  
-      // Check if the table has reached the bottom of the page (to add a new page)
-      if (currentPageHeight + tableRows.length * tableHeight > pageHeight - 40) {
-        // Add the current page's table
-        doc.autoTable({
-          head: [tableColumn],
-          body: tableRows,
-          startY: currentPageHeight,
-          styles: {
-            fontSize: 6,
-            cellPadding: 2, // Reduced padding for a tighter table
-            border:2,
-          },
-          headStyles: {
-            fillColor: [220, 0, 133],  // Green header color
-            textColor: 0,             // White text color
-            fontSize: 8,
-          },
-          alternateRowStyles: {
-            fillColor: [240, 40, 240], // Light grey for alternate rows
-          },
-          columnStyles: {
-            5: { halign: 'right' },      // Right-align Cash Amount column
-            6: { halign: 'right' }, 
-            7: { halign: 'right' },     // Right-align Bank Amount column
-            13: { halign: 'right' },      // Right-align Cash Amount column
-            14: { halign: 'right' }, 
-            15: { halign: 'right' }, 
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      rowPageBreak: 'avoid',
+      startY: 30,
+      margin: { left: 14, right: 14, bottom: 30 },
+      styles: {
+        fontSize: 6,
+        cellPadding: 1.5,
+      },
+      headStyles: {
+        fillColor: [0, 0, 0],
+        fontSize: 6,
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+     /* columnStyles: Array.from({ length: columnCount }).reduce((acc, _, idx) => {
+        acc[idx] = { cellWidth: columnWidth };
+        return acc;
+      }, {}),*/
+      columnStyles: Array.from({ length: columnCount }).reduce((acc, _, idx) => {
+      // Right-align Cash, Bank, and Saving columns (index 5, 6, 7, 13, 14, 15)
+      if ([5, 6, 7, 13, 14, 15].includes(idx)) {
+        acc[idx] = { cellWidth: columnWidth, halign: 'right', fontStyle: 'bold', 
+          fillColor: '#00FFFF' };
+      } /*else if (idx === 2) {
+        // Double the width for the "Particular" column (index 2)
+        acc[idx] = { cellWidth: columnWidth * 2, halign: 'left' };
+      }*/ else {
+        acc[idx] = { cellWidth: columnWidth, halign: 'left' };
+      }
+      return acc;
+    }, {}),
+      
+      willDrawCell: function (data) {
+        if (data.section === 'body' && data.column.index === 0) {
+          const page = doc.internal.getCurrentPageInfo().pageNumber;
+      
+          if (!pageSubtotals[page]) {
+            pageSubtotals[page] = {
+              cash: 0, bank: 0, saving: 0,
+              cash1: 0, bank1: 0, saving1: 0
+            };
           }
-        });
+      
+          const row = data.row.raw;
+          pageSubtotals[page].cash += parseFloat(row[5] || 0);
+          pageSubtotals[page].bank += parseFloat(row[6] || 0);
+          pageSubtotals[page].saving += parseFloat(row[7] || 0);
+          pageSubtotals[page].cash1 += parseFloat(row[13] || 0);
+          pageSubtotals[page].bank1 += parseFloat(row[14] || 0);
+          pageSubtotals[page].saving1 += parseFloat(row[15] || 0);
+        }
+      },
+      
   
-        // Add footer with totals for the current page
+      didDrawPage: function (data) {
+        const pageNumber = doc.internal.getNumberOfPages();
+        const subtotal = pageSubtotals[pageNumber] || {
+          cash: 0, bank: 0, saving: 0,
+          cash1: 0, bank1: 0, saving1: 0
+        };
+  
         const footerData = [
-          'a', 
-          'b',                           // Empty for Date column
-          'Total',                        // "Total" for Particular column
-          'd',                            // Empty for Txn ID column
-          'e',                            // Empty for L/F column
-          totalCashAmount,    // Cash Amount Total
-          totalBankAmount,     // Bank Amount Total
-          totalsavingBankAmount,
-          'i', 
-          'j',                           // Empty for Date column
-          'Total',                        // "Total" for Particular column
-          'l',                            // Empty for Txn ID column
-          'm',                            // Empty for L/F column
-          totalCashAmount1,    // Cash Amount Total
-          totalBankAmount1,     // Bank Amount Total
-          totalsavingBankAmount1
+          '', '', { content: 'Page Subtotal', colSpan: 3, styles: { halign: 'center' } },
+          subtotal.cash.toFixed(2), subtotal.bank.toFixed(2), subtotal.saving.toFixed(2),
+          '', '', { content: 'Page Subtotal', colSpan: 3, styles: { halign: 'center' } },
+          subtotal.cash1.toFixed(2), subtotal.bank1.toFixed(2), subtotal.saving1.toFixed(2)
         ];
   
-        let footerY = currentPageHeight + tableRows.length * tableHeight + 5;  // Footer position
-  
-        // If footer is going beyond the page height, adjust it
-        if (footerY + 15 > pageHeight) {
-          doc.addPage();
-          footerY = 20;  // Reset footer position to the top of the new page
-        }
-  
-        // Add footer for this page
         doc.autoTable({
-          head: [],
           body: [footerData],
-          startY: footerY,
+          startY: pageHeight - 25,
+          margin: { left: 14, right: 14 },
+          theme: 'plain',
           styles: {
-            fontSize: 8,
+            fontSize: 6,
+            fontStyle: 'bold',
             cellPadding: 2,
-            halign: 'right',             // Right-align Cash Amount and Bank Amount
-            border:2,
+            textColor: [255, 255, 255],
+            fillColor: [0, 200, 0]
           },
-          columnStyles: {
-            5: { halign: 'right' },      // Right-align Cash Amount column
-            6: { halign: 'right' }, 
-            7: { halign: 'right' }, 
-            13: { halign: 'right' },      // Right-align Cash Amount column
-            14: { halign: 'right' }, 
-            15: { halign: 'right' },       // Right-align Bank Amount column in footer
-          },
-          margin: { left: 14 },          // Set left margin to match the table
+          columnStyles: Array.from({ length: columnCount }).reduce((acc, _, idx) => {
+            acc[idx] = { cellWidth: columnWidth, halign: 'right' };
+            return acc;
+          }, {}),
         });
   
-        // Reset totals and prepare for the next page
-        totalCashAmount = 0;
-        totalBankAmount = 0;
-        totalsavingBankAmount = 0;
-        totalCashAmount1 = 0;
-        totalBankAmount1 = 0;
-        totalsavingBankAmount1 = 0;
-        tableRows.length = 0;  // Clear the rows for the next page
-        currentPageHeight = 30;  // Reset currentPageHeight for the new page
-        doc.addPage();  // Add a new page
+        // Page number
+        doc.setFontSize(7);
+        doc.setTextColor(100);
+        doc.text(`Page ${pageNumber}`, pageWidth - 30, pageHeight - 5);
       }
     });
   
-    // Add the last set of table rows (if any)
-    if (tableRows.length > 0) {
-      doc.autoTable({
-        head: [tableColumn],
-        body: tableRows,
-        startY: currentPageHeight,
-        styles: {
-          fontSize: 6,
-          cellPadding: 2, // Reduced padding for a tighter table
-          border:2,
-          lineColor: [0, 0, 0], 
-          lineWidth: 0.5,
-        },
-        headStyles: {
-          fillColor: [220, 160, 133],  // Green header color
-          textColor: 255,             // White text color
-          fontSize: 8,
-        },
-        alternateRowStyles: {
-          fillColor: [240, 240, 240], // Light grey for alternate rows
-        },
-        columnStyles: {
-          5: { halign: 'right' },      // Right-align Cash Amount column
-          6: { halign: 'right' }, 
-          7: { halign: 'right' },      // Right-align Cash Amount column
-          13: { halign: 'right' },      // Right-align Cash Amount column
-          14: { halign: 'right' }, 
-          15: { halign: 'right' },    // Right-align Bank Amount column
-        }
-      });
-  
-      // Add footer with totals for the last page
-      const footerData = [
-        'A',  
-        'B',                          // Empty for Date column
-        'Total',                        // "Total" for Particular column
-        'D',                            // Empty for Txn ID column
-        'E', 
-                                // Empty for L/F column
-        totalCashAmount,    // Cash Amount Total
-        totalBankAmount,     // Bank Amount Total
-        totalsavingBankAmount,
-        'I',  
-        'J', 
-                               // Empty for Date column
-        'Total',                        // "Total" for Particular column
-        'L',                            // Empty for Txn ID column
-        'M',                            // Empty for L/F column
-        totalCashAmount1,    // Cash Amount Total
-        totalBankAmount1,     // Bank Amount Total
-        totalsavingBankAmount1
-      ];
-  
-      let footerY = currentPageHeight + tableRows.length * 12 + 5;  // Footer position
-  
-      // If footer is going beyond the page height, adjust it
-      if (footerY + 15 > pageHeight) {
-        doc.addPage();
-        footerY = 20;  // Reset footer position to the top of the new page
-      }
-  
-      // Add footer for the last page
-      doc.autoTable({
-        head: [],
-        body: [footerData],
-        startY: footerY,
-        styles: {
-          fontSize: 8,
-          cellPadding: 2,
-          cellspacing: 2,
-          border:2,
-          lineColor: [0, 0, 0], 
-          lineWidth: 0.5,
-          halign: 'right',             // Right-align Cash Amount and Bank Amount
-        },
-        columnStyles: {
-            5: { halign: 'right' },      // Right-align Cash Amount column
-            6: { halign: 'right' }, 
-            7: { halign: 'right' }, 
-            13: { halign: 'right' },      // Right-align Cash Amount column
-            14: { halign: 'right' }, 
-            15: { halign: 'right' },      // Right-align Bank Amount column in footer
-        },
-        margin: { left: 14 },          // Set left margin to match the table
-      });
-    }
-  
-    // Save the PDF file
-    doc.save('TransactionReport.pdf');
+    doc.save('transactions_report.pdf');
   };
   
-/*
- 
-  */
-
-
   const exportToExcel = () => {
     if (transactions.length === 0) {
       alert('No transactions to export.');

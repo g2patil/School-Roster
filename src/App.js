@@ -41,7 +41,14 @@ import EditEmployee from "./pages/EditEmployee";
 import ShowRoster from "./pages/ShowRoster";
 import Home from "./pages/Home"; // Assuming you have a Home page
 import Login from "./pages/Login"; // Login page
+
 const App = () => {
+ /* return (
+    <div>
+      <Dashboard_01 />
+    </div>
+  );
+*/
   return <Router>
     <Routes>
         <Route path="/" element={<Home />} />
@@ -52,6 +59,7 @@ const App = () => {
           <Route path="add-employee" element={<AddEmployee />} />
           <Route path="edit-employee" element={<EditEmployee />} />
           <Route path="show-roster" element={<ShowRoster />} />
+         
         </Route>
       </Routes>
   </Router> ;
