@@ -1,30 +1,60 @@
 /* General Styles */
-.home-container {
-  font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
-  padding-top: 20px; /* Adjust to prevent navbar overlap */
-  width: 100%;
+
+html, body, #root {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+
+
  
 /* Navbar Styles */
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: left;
-  padding: 10px 20px;
-  background-color: #333; /* Fallback color */
-  background-image: url('./img/logo.png'); /* Add your logo */
-  background-size: contain;
-  background-position: left;
-  background-repeat: no-repeat;
-  height: 60px; /* Set a fixed height */
-  color: white;
+  align-items: center;
+  padding: 20px 20px;
+  height: 60px;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 97%;
+  left: 5px;
+  right: 5px;
+  width: 96%;
   z-index: 1000;
+}
+
+.nav-button {
+  background-color: transparent;
+  color: #68edfc;
+  border: 1px solid #facc15; /* amber-400 */
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #facc15; /* amber-400 */
+  color: #1e293b; /* dark blue-gray text on hover */
+  box-shadow: 0px 2px 10px rgba(255, 204, 0, 0.4);
+  cursor: pointer;
+}
+
+
+
+
+.logo-img {
+  height: 60px;
+  width: auto;
 }
 
 /* Navbar Logo */
@@ -59,7 +89,7 @@
 }
 
 .menu-items ul li a:hover {
-  background-color: #575757;
+  background-color: transparent;
 }
 
 /* Ensures the button takes full width and doesn't float */
@@ -116,7 +146,7 @@
 @media (max-width: 768px) {
   .navbar {
     background-image: none; /* Remove background image */
-    background-color: #333;
+    background-color:transparent;
   }
 
   .menu-items {
@@ -127,7 +157,7 @@
     left: 0;
     align-items: right;
     width: 100%;
-    background-color: #333;
+    background-color:transparent;
     padding: 10px 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
@@ -164,20 +194,7 @@
     font-size: 1rem;
   }
 
-  .dashboard-content {
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .dashboard-content h1 {
-    font-size: 24px;
-    color: #333;
-  }
-  
-  .dashboard-content h2 {
-    font-size: 18px;
-    color: #666;
-  }
+ 
   
   .logout-button {
     background-color: #f44336;
@@ -192,4 +209,32 @@
     background-color: #d32f2f;
   }
   
+}
+ .dashboard-content {
+   width: 100%;
+  min-height: calc(100vh); /* Make sure it fills the screen minus navbar */
+               /* Offset for fixed navbar */
+  
+  background-image: url('./img/bkg01.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+ 
+  }
+
+  
+  .dashboard-content h1 {
+     flex-grow: 1;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .dashboard-content h2 {
+    font-size: 18px;
+    color: #666;
+  }
+
+ /* Outlet wrapper */
+.outlet-wrapper {
+  width: 100%;
 }

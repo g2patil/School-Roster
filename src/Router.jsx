@@ -12,10 +12,14 @@ import ShowRoster from "./pages/ShowRoster";
 import ReservationDistribution from "./pages/ReservationDistribution";
 import Goshwara from "./pages/Goshwara";
 import Goshwarabycat from "./pages/Goshwarabycat";
+import Aboutus from "./pages/Aboutus";
+import Contactus from "./pages/ContactUs";
+import Team from "./pages/Team";
 import AddSchoolTransaction from "./pages/AddSchoolTransaction";
 import TransactionReport from "./pages/TransactionReport";
 import CombTransactionReport from "./pages/CombTransactionReport";
 import AddSalaryTransaction from "./pages/AddSalaryTransaction";
+import MainDash from "./pages/MainDash";
 //import EditEmployee from "./pages/EmployeeEdit";
 
 const AppRouter = () => {
@@ -24,12 +28,27 @@ const AppRouter = () => {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<MainDash />} />
           <Route path="/login" element={<Login />} />
 
           {/* Parent Dashboard Route with Nested Routes */}
-          <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
+
+<Route path="/MainDash/*" element={<MainDash />}>
+           
             <Route path="add-employee" element={<AddEmployee />} />
+             <Route path="Aboutus" element={<Aboutus />} />
+            <Route path="Contactus" element={<Contactus />} />
+             <Route path="Team" element={<Team />} />
+            <Route path="Login" element={<Login />} />
+          </Route>
+
+
+
+          <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
+          
+         
+            <Route path="add-employee" element={<AddEmployee />} />
+             <Route path="Aboutus" element={<Aboutus />} />
             <Route path="edit-employee" element={<EditEmployee />} />
             <Route path="show-roster" element={<ShowRoster />} />
             <Route path="show-goshwara" element={<Goshwara />} />
@@ -40,6 +59,8 @@ const AppRouter = () => {
             <Route path="comb-transaction-report" element={<CombTransactionReport />} />
             <Route path="add-salary-accont" element={<AddSalaryTransaction />} />
           </Route>
+
+           
         </Routes>
       </Router>
     </AuthProvider>

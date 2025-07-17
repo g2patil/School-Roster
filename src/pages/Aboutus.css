@@ -1,0 +1,50 @@
+.about-container {
+  padding-top: 70px; /* For navbar space */
+  font-family: sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  color: white;
+  z-index: 1000;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.menu-items ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-items li {
+  margin: 0 10px;
+}
+
+.menu-items a, .menu-items .Link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.menu-items a:hover {
+  text-decoration: underline;
+}
+
+.about-content {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  text-align: justify;
+}

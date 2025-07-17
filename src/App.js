@@ -39,8 +39,10 @@ import Dashboard from "./pages/Dashboard";
 import AddEmployee from "./pages/AddEmployee";
 import EditEmployee from "./pages/EditEmployee";
 import ShowRoster from "./pages/ShowRoster";
-import Home from "./pages/Home"; // Assuming you have a Home page
 import Login from "./pages/Login"; // Login page
+import About from "./pages/Aboutus"; // 
+import MainDash from "./pages/MainDash";
+
 
 const App = () => {
  /* return (
@@ -51,11 +53,14 @@ const App = () => {
 */
   return <Router>
     <Routes>
-        <Route path="/" element={<Home />} />
+         <Route path="/" element={<MainDash />} />
+        
         <Route path="/login" element={<Login />} />
+       
+         <Route path="/About" element={<About />} />
         
         {}
-        <Route path="/dashboard/*" element={<Dashboard />}>
+        <Route path="/MainDash/*" element={<MainDash />}>
           <Route path="add-employee" element={<AddEmployee />} />
           <Route path="edit-employee" element={<EditEmployee />} />
           <Route path="show-roster" element={<ShowRoster />} />
